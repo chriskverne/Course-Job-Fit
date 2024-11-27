@@ -1,0 +1,61 @@
+# Courses
+all_courses/*
+!all_courses/CIS_3950.pdf
+
+core_courses/*
+!core_courses/CGS_1920.pdf
+
+elective_courses/*
+!elective_courses/CAP_4612.pdf
+
+# Datasets
+Datasets/*
+
+# E5
+e5_similarities/*
+!e5_similarities/e5_similarities.py
+
+# Jobs
+fetch_jobs/cleanedjobs/*
+fetch_jobs/jobs/*
+
+# GTE
+GTE_similarities/*
+!GTE_similarities/GTE_similarities.py
+
+# MPnet
+MPnet/*
+!MPnet/mpnet_sim.py
+
+# Roberta
+Roberta_similarities/*
+!Roberta_similarities/Roberta_similarities.py
+
+# SBERT
+SBERT_similarities/*
+!SBERT_similarities/SBERTSimilarity.py
+
+# USE
+USE_similarities/*
+!USE_similarities/USESimilarity.py
+
+# Comparisons
+Model_Comparison_Analysis.xlsx
+Model_Comparison_Statistics.xlsx
+
+compare_models/*
+!compare_models/compareModelTemp.py
+
+compareModels/*
+!compareModels/compareModelTemp.py
+
+# PyCache
+**/__pycache__/*
+
+# IDE files
+.idea/*
+
+# Additional directories
+Functions/*
+!Functions/CleanText.py
+!Functions/NumTokens.py
