@@ -1,4 +1,7 @@
 import pandas as pd
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Functions.CleanText import clean_text
 
 swe_paths = [
@@ -19,6 +22,7 @@ swe_paths = [
     './jobs/swe_jobs_11_21.xlsx',
     './jobs/swe_jobs_11_23.xlsx',
     './jobs/swe_jobs_11_27.xlsx',
+    './jobs/swe_jobs_11_28.xlsx',
 ]
 cs_paths = [
     './jobs/cs_jobs_10_10.xlsx',
@@ -35,6 +39,7 @@ cs_paths = [
     './jobs/cs_jobs_11_21.xlsx',
     './jobs/cs_jobs_11_23.xlsx',
     './jobs/cs_jobs_11_27.xlsx',
+    './jobs/cs_jobs_11_28.xlsx',
 ]
 ds_paths = [
     './jobs/ds_jobs_10_10.xlsx',
@@ -51,6 +56,7 @@ ds_paths = [
     './jobs/ds_jobs_11_21.xlsx',
     './jobs/ds_jobs_11_23.xlsx',
     './jobs/ds_jobs_11_27.xlsx',
+    './jobs/ds_jobs_11_28.xlsx',
 ]
 it_paths = [
     './jobs/it_jobs_10_13.xlsx',
@@ -63,9 +69,10 @@ it_paths = [
     './jobs/it_jobs_11_16.xlsx',
     './jobs/it_jobs_11_19.xlsx',
     './jobs/it_jobs_11_20.xlsx',
-    './jobs/it_jobs_11_21.xlsx'
-    './jobs/it_jobs_11_23.xlsx'
-    './jobs/it_jobs_11_27.xlsx'
+    './jobs/it_jobs_11_21.xlsx',
+    './jobs/it_jobs_11_23.xlsx',
+    './jobs/it_jobs_11_27.xlsx',
+    './jobs/it_jobs_11_27.xlsx',
 ]
 pm_paths = [
     './jobs/pm_jobs_10_10.xlsx',
@@ -81,6 +88,7 @@ pm_paths = [
     './jobs/pm_jobs_11_21.xlsx',
     './jobs/pm_jobs_11_23.xlsx',
     './jobs/pm_jobs_11_27.xlsx',
+    './jobs/pm_jobs_11_28.xlsx',
 ]
 
 def combine_dataframes(paths):
@@ -101,9 +109,8 @@ def combine_dataframes(paths):
             print(f"Error processing file {path}: {str(e)}")
             print("Skipping this file and continuing...")
             continue
-    # Combine all dataframes to 1 large one
+    # Combine all dataframes to 1 large one and drop duplicates
     combined_df = pd.concat(all_dfs)
-    # Drop duplicate job postings
     combined_df.drop_duplicates(subset=['description'], inplace=True)
 
     # Results
@@ -159,9 +166,8 @@ cleaned_ds_jobs.to_excel('../Datasets/ds_jobs.xlsx')
 cleaned_it_jobs.to_excel('../Datasets/it_jobs.xlsx')
 cleaned_pm_jobs.to_excel('../Datasets/pm_jobs.xlsx')
 
-# Converts to 1 large dataset of specified distribution
-
 """
+# Converts to 1 large dataset of specified distribution
 percentage = len(cleaned_swe_jobs) / 100
 num_swe_jobs = len(cleaned_swe_jobs)
 num_cs_jobs = round(percentage * 5) # len(cleaned_cs_jobs)
