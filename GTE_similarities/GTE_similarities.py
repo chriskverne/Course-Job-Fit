@@ -3,6 +3,11 @@ import torch
 from transformers import AutoTokenizer, AutoModel
 import torch.nn.functional as F
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = AutoModel.from_pretrained("thenlper/gte-base").to(device)
+tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-base") # "thenlper/gte-large" for better performance
+max_token_len = model.config.max_position_embeddings 
+
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output[0]
     # Expand mask to embedding dimensions

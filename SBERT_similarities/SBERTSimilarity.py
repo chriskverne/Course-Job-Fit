@@ -6,7 +6,7 @@ import time
 # Model parameters
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = SentenceTransformer('all-MiniLM-L6-v2').to(device)
-token_max_len = model.max_seq_length
+max_token_len = model.max_seq_length
 tokenizer = model.tokenizer
 
 # How many descriptions are above token limit
@@ -18,7 +18,7 @@ def encode_text(text):
     global truncation_count, total_count
     with torch.no_grad():
         tokens = tokenizer(text, truncation=False)['input_ids'][0]
-        if len(tokens) > token_max_len:
+        if len(tokens) > max_token_len:
             truncation_count+=1
             embedding = get_mean_pooled_embedding(tokens)
         else:
@@ -28,7 +28,7 @@ def encode_text(text):
 
 # When the token limit exceeds the models max capacity
 def get_mean_pooled_embedding(tokens):
-    chunks = [tokens[i:i + token_max_len] for i in range(0, len(tokens), token_max_len)]
+    chunks = [tokens[i:i + max_token_len] for i in range(0, len(tokens), max_token_len)]
     embeddings = []
     token_counts = []
 
