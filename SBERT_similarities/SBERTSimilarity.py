@@ -85,8 +85,6 @@ def calculate_similarity(course_path, output_path, job_path):
     results_df.to_csv(output_path, index=False)
     print(f"Similarity between courses and jobs calculated and saved to '{output_path}'.")
 
-
-
 course_path = '../Datasets/cleaned_all_courses.xlsx'
 output_path = './SBERT_all_course_cs_jobs.csv'
 jobs_path = '../Datasets/cs_jobs.xlsx'
