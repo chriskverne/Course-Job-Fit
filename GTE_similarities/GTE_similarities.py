@@ -102,12 +102,9 @@ def calculate_similarity(course_path, output_path, job_path):
     print(f"Similarity between courses and jobs calculated and saved to '{output_path}'.")
 
 # Paths for datasets and outputs
-core_path = '../../Datasets/cleaned_core_courses.xlsx'
-core_output = './core_course_job_similarity.csv'
-elective_path = '../../Datasets/cleaned_elective_courses.xlsx'
-elective_output = './elective_course_job_similarity.csv'
-all_path = '../Datasets/cleaned_all_courses.xlsx'
-all_output = './all_course_job_similarity.csv'
-
-# Calculate similarity for the all courses dataset
-calculate_similarity(all_path, all_output, '../Datasets/final_jobs.xlsx')
+course_path = '../Datasets/cleaned_all_courses.xlsx'
+calculate_similarity(course_path, './GTE_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
+calculate_similarity(course_path, './GTE_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
+calculate_similarity(course_path, './GTE_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
+calculate_similarity(course_path, './GTE_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
+calculate_similarity(course_path, './GTE_all_course_swe_jobs.csv', '../Datasets/swe_jobs.xlsx')

@@ -3,13 +3,11 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import torch
 
-
 # Initialize the SentenceTransformer model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = SentenceTransformer('all-mpnet-base-v2').to(device)
 token_max_len = model.max_seq_length
 tokenizer = model.tokenizer
-print('test')
 
 # How many descriptions are above token limit
 truncation_count = 0
