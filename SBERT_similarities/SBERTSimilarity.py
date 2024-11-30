@@ -17,7 +17,7 @@ total_count = 0
 def encode_text(text):
     global truncation_count, total_count
     with torch.no_grad():
-        tokens = tokenizer(text, truncation=False)['input_ids'][0]
+        tokens = tokenizer(text, truncation=False)['input_ids'] # array of tokens
         if len(tokens) > max_token_len:
             truncation_count+=1
             embedding = get_mean_pooled_embedding(tokens)
@@ -86,7 +86,8 @@ def calculate_similarity(course_path, output_path, job_path):
     print(f"Similarity between courses and jobs calculated and saved to '{output_path}'.")
 
 course_path = '../Datasets/cleaned_all_courses.xlsx'
-output_path = './SBERT_all_course_cs_jobs.csv'
-jobs_path = '../Datasets/cs_jobs.xlsx'
-
-calculate_similarity(course_path, output_path, jobs_path)
+calculate_similarity(course_path, './SBERT_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
+calculate_similarity(course_path, './SBERT_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
+calculate_similarity(course_path, './SBERT_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
+calculate_similarity(course_path, './SBERT_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
+calculate_similarity(course_path, './SBERT_all_course_swe_jobs.csv', '../Datasets/swe_jobs.xlsx')
