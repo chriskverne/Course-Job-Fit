@@ -4,7 +4,7 @@ import tensorflow_hub as hub
 import time
 import os
 os.environ['TFHUB_CACHE_DIR'] = './tf_cache'
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force CPU usage
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force CPU usage
 
 # Check if GPU is available
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))

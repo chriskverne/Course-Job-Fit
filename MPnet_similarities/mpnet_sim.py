@@ -32,7 +32,7 @@ def get_mean_pooled_embedding(tokens):
 def encode_text(text):
     global truncation_count, total_count
     with torch.no_grad():
-        tokens = tokenizer(text, trucation=False)['input_ids'][0]
+        tokens = tokenizer(text, truncation=False)['input_ids'][0]
         if len(tokens) > token_max_len:
             truncation_count += 1
             embedding = get_mean_pooled_embedding(tokens)
