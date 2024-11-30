@@ -61,3 +61,5 @@ Functions/*
 !Functions/NumTokens.py
 
 tests.py
+
+computed_similarities/*
