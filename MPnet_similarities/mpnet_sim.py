@@ -3,11 +3,13 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import torch
 
+
 # Initialize the SentenceTransformer model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = SentenceTransformer('all-mpnet-base-v2').to(device)
 token_max_len = model.max_seq_length
 tokenizer = model.tokenizer
+print('test')
 
 # How many descriptions are above token limit
 truncation_count = 0
@@ -41,7 +43,7 @@ def encode_text(text):
         total_count += 1
         return  embedding
 
-def calculate_mpnet_similarity(course_path, output_path, job_path):
+def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions
     courses_df = pd.read_excel(course_path)
     jobs_df = pd.read_excel(job_path)
@@ -81,8 +83,9 @@ def calculate_mpnet_similarity(course_path, output_path, job_path):
     print(f"Similarity between courses and jobs calculated using all-mpnet-base-v2 and saved to '{output_path}'.")
 
 # Example usage
-all_path = '../Datasets/cleaned_all_courses.xlsx'
-all_output_mpnet = './all_course_job_similarity_mpnet.csv'
-job_path = '../Datasets/final_jobs.xlsx'
-
-calculate_mpnet_similarity(all_path, all_output_mpnet, job_path)
+course_path = '../Datasets/cleaned_all_courses.xlsx'
+calculate_similarity(course_path, './MPnet_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
+calculate_similarity(course_path, './MPnet_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
+calculate_similarity(course_path, './MPnet_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
+calculate_similarity(course_path, './MPnet_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
+calculate_similarity(course_path, './MPnet_all_course_swe_jobs.csv', '../Datasets/swe_jobs.xlsx')
