@@ -8,7 +8,7 @@ def rank_courses(similarity_path, threshold):
 
     # Average similarity for each course
     avg_sims = df.groupby('Course Name')['Similarity'].mean().sort_values()
-    print(avg_sims)
+    print(avg_sims[200:210])
 
     # Strong match count
     strong_matches = df[df['Similarity'] > threshold]
@@ -29,13 +29,15 @@ def rank_courses(similarity_path, threshold):
     weighted_mean_salary = df_salary.groupby('Course Name').apply(weighted_salary).sort_values()
     #print("\nWeighted Mean Salary by Course:\n", weighted_mean_salary)
 
-path_roberta = './Roberta_similarities/all_course_job_similarity_roberta.csv'
-path_sbert = './SBERT_similarities/all_course_job_similarity.csv'
+path_sbert = './computed_similarities/SBERT/SBERT_all_course_it_jobs.csv'
+path_sbert2 = './computed_similarities/SBERT/SBERT_all_course_cs_jobs.csv'
+
 path_sbert_trunc = './SBERT_similarities/all_course_job_similarity_with_trunc.csv'
 path_use = './USE_similarities/all_course_job_similarity.csv'
 #rank_courses(path_roberta, 0.70)
-rank_courses(path_sbert, 0.70)
-rank_courses(path_sbert_trunc, 0.70)
+#rank_courses(path_sbert, 0.70)
+rank_courses(path_sbert2, 0.70)
+#rank_courses(path_sbert_trunc, 0.70)
 #rank_courses(path_use, 0.70)
 
 
