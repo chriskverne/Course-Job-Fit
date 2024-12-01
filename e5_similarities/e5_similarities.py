@@ -83,8 +83,8 @@ def calculate_similarity(course_path, output_path, job_path):
     print(f"Total descriptions truncated: {truncation_count}, total_descriptions: {total_count}")
 
     # Convert lists to tensors for similarity calculation
-    course_embeddings = torch.stack(course_embeddings)
-    job_embeddings = torch.stack(job_embeddings)
+    course_embeddings = torch.stack(course_embeddings).cpu()
+    job_embeddings = torch.stack(job_embeddings).cpu()
 
     # Compute cosine similarities
     similarity_matrix = F.cosine_similarity(

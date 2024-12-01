@@ -9,7 +9,11 @@ os.environ['TFHUB_CACHE_DIR'] = './tf_cache'
 model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
 
 # Check if GPU is available
-tf.config.set_visible_devices(tf.config.list_physical_devices('GPU')[0], 'GPU')
+gpus = tf.config.list_physical_devices('GPU')
+tf.config.set_visible_devices(gpus[4], 'GPU')  # Use GPU 4
+visible_gpus = tf.config.get_visible_devices('GPU')
+for gpu in visible_gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)  # Enable memory growth
 
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions
