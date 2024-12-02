@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import time
 
 # Model parameters
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("BAAI/bge-large-en-v1.5").to(device)
 tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-large-en-v1.5")
 max_token_len = tokenizer.model_max_length
@@ -35,7 +35,7 @@ def encode_text(text):
             embedding = mean_pooling(model_output, encoded['attention_mask'])
             embedding = F.normalize(embedding, p=2, dim=1)[0]
         total_count += 1
-        return embedding
+        return embedding.cpu()
 
 def get_mean_pooled_embedding(tokens):
     # Simple chunking like SBERT
@@ -109,8 +109,8 @@ def calculate_similarity(course_path, output_path, job_path):
 
 # Paths for datasets and outputs
 course_path = '../Datasets/cleaned_all_courses.xlsx'
-calculate_similarity(course_path, './BGE_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
-calculate_similarity(course_path, './BGE_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
-calculate_similarity(course_path, './BGE_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
-calculate_similarity(course_path, './BGE_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
+#calculate_similarity(course_path, './BGE_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
+#calculate_similarity(course_path, './BGE_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
+#calculate_similarity(course_path, './BGE_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
+#calculate_similarity(course_path, './BGE_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
 calculate_similarity(course_path, './BGE_all_course_swe_jobs.csv', '../Datasets/swe_jobs.xlsx')
