@@ -6,8 +6,8 @@ import time
 
 # Model parameters
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = AutoModel.from_pretrained("thenlper/gte-base").to(device)
-tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-base")
+model = AutoModel.from_pretrained("thenlper/gte-large").to(device)
+tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-large")
 max_token_len = tokenizer.model_max_length
 
 # How many descriptions are above token limit
