@@ -20,7 +20,7 @@ def get_mean_pooled_embedding(tokens):
 
     for chunk in chunks:
         chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
-        chunk_embedding = model.encode(chunk_text, convert_to_tensor=True).cpu()
+        chunk_embedding = model.encode(chunk_text, convert_to_tensor=True)
         embeddings.append(chunk_embedding)
         token_counts.append(len(chunk))
 
@@ -37,9 +37,9 @@ def encode_text(text):
             truncation_count += 1
             embedding = get_mean_pooled_embedding(tokens)
         else:
-            embedding = model.encode(text, convert_to_tensor=True).cpu()
+            embedding = model.encode(text, convert_to_tensor=True)
         total_count += 1
-        return  embedding
+        return  embedding.cpu()
 
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions

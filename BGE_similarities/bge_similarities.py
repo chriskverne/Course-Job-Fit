@@ -51,7 +51,7 @@ def get_mean_pooled_embedding(tokens):
         encoded = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').to(device)
         model_output = model(**encoded)
         chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
-        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0].cpu()
+        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
         
         embeddings.append(chunk_embedding)
         token_counts.append(len(chunk))
@@ -109,8 +109,8 @@ def calculate_similarity(course_path, output_path, job_path):
 
 # Paths for datasets and outputs
 course_path = '../Datasets/cleaned_all_courses.xlsx'
-#calculate_similarity(course_path, './BGE_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
-#calculate_similarity(course_path, './BGE_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
-#calculate_similarity(course_path, './BGE_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
-#calculate_similarity(course_path, './BGE_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
+calculate_similarity(course_path, './BGE_all_course_cs_jobs.csv', '../Datasets/cs_jobs.xlsx')
+calculate_similarity(course_path, './BGE_all_course_ds_jobs.csv', '../Datasets/ds_jobs.xlsx')
+calculate_similarity(course_path, './BGE_all_course_it_jobs.csv', '../Datasets/it_jobs.xlsx')
+calculate_similarity(course_path, './BGE_all_course_pm_jobs.csv', '../Datasets/pm_jobs.xlsx')
 calculate_similarity(course_path, './BGE_all_course_swe_jobs.csv', '../Datasets/swe_jobs.xlsx')

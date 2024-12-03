@@ -8,7 +8,7 @@ import time
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("thenlper/gte-large").to(device)
 tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-large")
-max_token_len = tokenizer.model_max_length
+max_token_len = model.config.max_position_embeddings #tokenizer.model_max_length
 
 # How many descriptions are above token limit
 truncation_count = 0
@@ -47,7 +47,7 @@ def get_mean_pooled_embedding(tokens):
         chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
         chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
         
-        embeddings.append(chunk_embedding.cpu())
+        embeddings.append(chunk_embedding)
         token_counts.append(len(chunk))
 
     total_tokens = sum(token_counts)
