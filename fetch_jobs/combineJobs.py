@@ -23,6 +23,9 @@ swe_paths = [
     './jobs/swe_jobs_11_23.xlsx',
     './jobs/swe_jobs_11_27.xlsx',
     './jobs/swe_jobs_11_28.xlsx',
+    './jobs/swe_jobs_11_29.xlsx',
+    './jobs/swe_jobs_12_1.xlsx',
+    './jobs/swe_jobs_12_2.xlsx',
 ]
 cs_paths = [
     './jobs/cs_jobs_10_10.xlsx',
@@ -40,6 +43,9 @@ cs_paths = [
     './jobs/cs_jobs_11_23.xlsx',
     './jobs/cs_jobs_11_27.xlsx',
     './jobs/cs_jobs_11_28.xlsx',
+    './jobs/cs_jobs_11_29.xlsx',
+    './jobs/cs_jobs_12_1.xlsx',
+    './jobs/cs_jobs_12_2.xlsx',
 ]
 ds_paths = [
     './jobs/ds_jobs_10_10.xlsx',
@@ -57,6 +63,9 @@ ds_paths = [
     './jobs/ds_jobs_11_23.xlsx',
     './jobs/ds_jobs_11_27.xlsx',
     './jobs/ds_jobs_11_28.xlsx',
+    './jobs/ds_jobs_11_29.xlsx',
+    './jobs/ds_jobs_12_1.xlsx',
+    './jobs/ds_jobs_12_2.xlsx',
 ]
 it_paths = [
     './jobs/it_jobs_10_13.xlsx',
@@ -73,6 +82,9 @@ it_paths = [
     './jobs/it_jobs_11_23.xlsx',
     './jobs/it_jobs_11_27.xlsx',
     './jobs/it_jobs_11_27.xlsx',
+    './jobs/it_jobs_11_29.xlsx',
+    './jobs/it_jobs_12_1.xlsx',
+    './jobs/it_jobs_12_2.xlsx',
 ]
 pm_paths = [
     './jobs/pm_jobs_10_10.xlsx',
@@ -89,6 +101,9 @@ pm_paths = [
     './jobs/pm_jobs_11_23.xlsx',
     './jobs/pm_jobs_11_27.xlsx',
     './jobs/pm_jobs_11_28.xlsx',
+    './jobs/pm_jobs_11_29.xlsx',
+    './jobs/pm_jobs_12_1.xlsx',
+    './jobs/pm_jobs_12_2.xlsx',
 ]
 
 def combine_dataframes(paths):
