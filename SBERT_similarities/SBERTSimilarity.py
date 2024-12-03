@@ -22,7 +22,7 @@ def encode_text(text):
             truncation_count+=1
             embedding = get_mean_pooled_embedding(tokens)
         else:
-            embedding = model.encode(text, convert_to_tensor=True)
+            embedding = model.encode(text, convert_to_tensor=True).cpu()
         total_count+=1
         return embedding
 
@@ -34,7 +34,7 @@ def get_mean_pooled_embedding(tokens):
 
     for chunk in chunks:
         chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
-        chunk_embedding = model.encode(chunk_text, convert_to_tensor=True)
+        chunk_embedding = model.encode(chunk_text, convert_to_tensor=True).cpu()
         embeddings.append(chunk_embedding)
         token_counts.append(len(chunk))
 

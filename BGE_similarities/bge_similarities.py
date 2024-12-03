@@ -51,7 +51,7 @@ def get_mean_pooled_embedding(tokens):
         encoded = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').to(device)
         model_output = model(**encoded)
         chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
-        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
+        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0].cpu()
         
         embeddings.append(chunk_embedding)
         token_counts.append(len(chunk))

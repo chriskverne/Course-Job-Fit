@@ -32,7 +32,7 @@ def encode_text(text):
             embedding = mean_pooling(model_output, encoded['attention_mask'])
             embedding = F.normalize(embedding, p=2, dim=1)[0]
         total_count += 1
-        return embedding
+        return embedding.cpu()
 
 def get_mean_pooled_embedding(tokens):
     # Simple chunking like SBERT
@@ -47,7 +47,7 @@ def get_mean_pooled_embedding(tokens):
         chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
         chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
         
-        embeddings.append(chunk_embedding)
+        embeddings.append(chunk_embedding.cpu())
         token_counts.append(len(chunk))
 
     total_tokens = sum(token_counts)
@@ -79,8 +79,8 @@ def calculate_similarity(course_path, output_path, job_path):
     print(f"Total descriptions truncated: {truncation_count}, total_descriptions: {total_count}")
 
     # Convert lists to tensors for similarity calculation
-    course_embeddings = torch.stack(course_embeddings)#.cpu()
-    job_embeddings = torch.stack(job_embeddings)#.cpu()
+    course_embeddings = torch.stack(course_embeddings)
+    job_embeddings = torch.stack(job_embeddings)
 
     # Compute cosine similarities
     similarity_matrix = F.cosine_similarity(
