@@ -4,11 +4,13 @@ from transformers import AutoTokenizer, AutoModel
 import torch.nn.functional as F
 import time
 
+
+"""
 # Model parameters
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("intfloat/e5-large-v2").to(device)
 tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-large-v2")
-max_token_len = tokenizer.model_max_length
+max_token_len = model.config.max_position_embeddings
 
 # How many descriptions are above token limit
 truncation_count = 0
@@ -60,6 +62,72 @@ def get_mean_pooled_embedding(tokens, is_course):
     final_embedding = F.normalize(final_embedding.unsqueeze(0), p=2, dim=1)[0]
     
     return final_embedding
+"""
+
+# Model parameters
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = AutoModel.from_pretrained("intfloat/e5-large-v2").to(device)
+tokenizer = AutoTokenizer.from_pretrained("intfloat/e5-large-v2")
+max_token_len = model.config.max_position_embeddings
+
+# How many descriptions are above token limit
+truncation_count = 0
+total_count = 0
+
+def average_pool(last_hidden_states, attention_mask):
+    last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
+    return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
+
+def encode_text(text, is_course):
+    with torch.no_grad():
+        global truncation_count, total_count
+        text = f"passage: {text}" if is_course else f"query: {text}"
+        tokens = tokenizer(text, truncation=False, padding=True, return_tensors="pt")
+        tokens = {k: v.to(device) for k, v in tokens.items()} # Move to device
+        input_ids = tokens['input_ids'][0]
+        attention_mask = tokens['attention_mask'][0]
+        #print('tt_token_len:', len(input_ids))
+        if len(input_ids) > max_token_len:
+            truncation_count+=1
+            total_count+=1
+            #print("Text exceeds token limit")
+            chunk_size = max_token_len - 2
+                
+            # Split both input_ids and attention_mask
+            input_chunks = [input_ids[i:i + chunk_size] for i in range(0, len(input_ids), chunk_size)]
+            mask_chunks = [attention_mask[i:i + chunk_size] for i in range(0, len(attention_mask), chunk_size)]
+                
+            embeddings = []
+            token_counts = []
+                
+            for input_chunk, mask_chunk in zip(input_chunks, mask_chunks):
+                #print("chunk len", len(input_chunk))
+                chunk_input = {
+                    'input_ids': input_chunk.unsqueeze(0),
+                    'attention_mask': mask_chunk.unsqueeze(0)
+                }
+                    
+                outputs = model(**chunk_input)
+                embedding = average_pool(outputs.last_hidden_state, chunk_input['attention_mask'])
+                embedding = F.normalize(embedding, p=2, dim=1)[0]
+                    
+                # Use the actual number of non-padding tokens for weighting
+                valid_tokens = mask_chunk.sum().item()
+                #print('token_len', len(input_chunk),'num valid_tokens', valid_tokens)
+                embeddings.append(embedding)
+                token_counts.append(valid_tokens)
+                
+            # Weight and combine embeddings
+            total_tokens = sum(token_counts)
+            weighted_embeddings = [emb * (count / total_tokens) for emb, count in zip(embeddings, token_counts)]
+            final_embedding = torch.stack(weighted_embeddings).sum(dim=0)
+            return F.normalize(final_embedding, p=2, dim=0).cpu()
+        else:
+            #print("within token limit")
+            total_count+=1
+            outputs = model(**tokens)
+            embeddings = average_pool(outputs.last_hidden_state, tokens['attention_mask'])
+            return F.normalize(embeddings, p=2, dim=1)[0].cpu()
 
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions

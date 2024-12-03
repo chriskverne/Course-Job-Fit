@@ -42,8 +42,8 @@ def encode_text(text):
             for input_chunk, mask_chunk in zip(input_chunks, mask_chunks):
                 #print("chunk len", len(input_chunk))
                 chunk_input = {
-                    'input_ids': input_chunk.unsqueeze(0).to(device),
-                    'attention_mask': mask_chunk.unsqueeze(0).to(device)
+                    'input_ids': input_chunk.unsqueeze(0),
+                    'attention_mask': mask_chunk.unsqueeze(0)
                 }
                 
                 outputs = model(**chunk_input)
