@@ -14,26 +14,60 @@ max_token_len = model.config.max_position_embeddings #tokenizer.model_max_length
 truncation_count = 0
 total_count = 0
 
-def mean_pooling(model_output, attention_mask):
-    token_embeddings = model_output[0]
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+def average_pool(last_hidden_states, attention_mask):
+    last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
+    return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
 def encode_text(text):
     global truncation_count, total_count
     with torch.no_grad():
-        tokens = tokenizer(text, truncation=False)['input_ids']
-        if len(tokens) > max_token_len:
-            truncation_count += 1
-            embedding = get_mean_pooled_embedding(tokens)
+        tokens = tokenizer(text, truncation=False, return_tensors="pt", padding=True)
+        tokens = {k: v.to(device) for k, v in tokens.items()} # Move to device
+        input_ids = tokens['input_ids'][0]
+        attention_mask = tokens['attention_mask'][0]
+        
+        if len(input_ids) > max_token_len:
+            truncation_count+=1
+            total_count+=1
+            #print("Text exceeds token limit")
+            chunk_size = max_token_len - 2
+            
+            # Split both input_ids and attention_mask
+            input_chunks = [input_ids[i:i + chunk_size] for i in range(0, len(input_ids), chunk_size)]
+            mask_chunks = [attention_mask[i:i + chunk_size] for i in range(0, len(attention_mask), chunk_size)]
+            
+            embeddings = []
+            token_counts = []
+            
+            for input_chunk, mask_chunk in zip(input_chunks, mask_chunks):
+                #print("chunk len", len(input_chunk))
+                chunk_input = {
+                    'input_ids': input_chunk.unsqueeze(0).to(device),
+                    'attention_mask': mask_chunk.unsqueeze(0).to(device)
+                }
+                
+                outputs = model(**chunk_input)
+                embedding = average_pool(outputs.last_hidden_state, chunk_input['attention_mask'])
+                embedding = F.normalize(embedding, p=2, dim=1)[0]
+                
+                # Use the actual number of non-padding tokens for weighting
+                valid_tokens = mask_chunk.sum().item()
+                embeddings.append(embedding)
+                token_counts.append(valid_tokens)
+            
+            # Weight and combine embeddings
+            total_tokens = sum(token_counts)
+            weighted_embeddings = [emb * (count / total_tokens) for emb, count in zip(embeddings, token_counts)]
+            final_embedding = torch.stack(weighted_embeddings).sum(dim=0)
+            return F.normalize(final_embedding, p=2, dim=0).cpu()
         else:
-            encoded = tokenizer(text, padding=True, truncation=True, return_tensors='pt').to(device)
-            model_output = model(**encoded)
-            embedding = mean_pooling(model_output, encoded['attention_mask'])
-            embedding = F.normalize(embedding, p=2, dim=1)[0]
-        total_count += 1
-        return embedding.cpu()
+            total_count+=1
+            #print('normal embedding')
+            outputs = model(**tokens)
+            embedding = average_pool(outputs.last_hidden_state, tokens['attention_mask'])
+            return F.normalize(embedding, p=2, dim=1)[0].cpu()
 
+"""
 def get_mean_pooled_embedding(tokens):
     # Simple chunking like SBERT
     chunks = [tokens[i:i + max_token_len] for i in range(0, len(tokens), max_token_len)]
@@ -56,7 +90,8 @@ def get_mean_pooled_embedding(tokens):
     final_embedding = F.normalize(final_embedding.unsqueeze(0), p=2, dim=1)[0]
     
     return final_embedding
-
+"""
+    
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions
     courses_df = pd.read_excel(course_path)
