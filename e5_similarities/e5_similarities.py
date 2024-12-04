@@ -82,7 +82,7 @@ def encode_text(text, is_course):
         global truncation_count, total_count
         text = f"passage: {text}" if is_course else f"query: {text}"
 
-        tokens = tokenizer(text, truncation=False, padding=True, return_tensors="pt").to(device)
+        tokens = tokenizer(text, truncation=False, padding=True, return_tensors="pt")
         tokens = {k: v.to(device) for k, v in tokens.items()} # Move to device
         input_ids = tokens['input_ids'][0]
         attention_mask = tokens['attention_mask'][0]
