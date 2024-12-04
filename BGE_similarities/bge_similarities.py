@@ -6,7 +6,7 @@ import time
 
 """
 # Model parameters
-device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("BAAI/bge-large-en-v1.5").to(device)
 tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-large-en-v1.5")
 max_token_len = tokenizer.model_max_length
@@ -65,6 +65,7 @@ def get_mean_pooled_embedding(tokens):
     return final_embedding
 """
 
+# ------------------------------- Code 2 ----------------------------------
 # Model parameters
 device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("BAAI/bge-large-en-v1.5").to(device)
@@ -75,22 +76,23 @@ max_token_len = tokenizer.model_max_length
 truncation_count = 0
 total_count = 0
 
+def average_pool(last_hidden_states, attention_mask):
+    last_hidden = last_hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
+    return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
+
 def encode_text(text):
     global truncation_count, total_count
+    text = f"Represent this text for semantic similarity: {text}"
     with torch.no_grad():
-        tokens = tokenizer(text, truncation=False, return_tensors="pt", padding=True)
-        tokens = {k: v.to(device) for k, v in tokens.items()} # Move to device
+        tokens = tokenizer(text, truncation=False, return_tensors="pt", padding=True).to(device)
         input_ids = tokens['input_ids'][0]
         attention_mask = tokens['attention_mask'][0]
-        #print(len(input_ids))
 
         if len(input_ids) > max_token_len:
             truncation_count+=1
             total_count+=1
-            #print("above token limit")
             chunk_size = max_token_len - 2
             
-            # Split both input_ids and attention_mask
             input_chunks = [input_ids[i:i + chunk_size] for i in range(0, len(input_ids), chunk_size)]
             mask_chunks = [attention_mask[i:i + chunk_size] for i in range(0, len(attention_mask), chunk_size)]
             
@@ -98,33 +100,29 @@ def encode_text(text):
             token_counts = []
                         
             for input_chunk, mask_chunk in zip(input_chunks, mask_chunks):
-                #print("chunk len", len(input_chunk))
-                chunk_input = {
-                    'input_ids': input_chunk.unsqueeze(0),
-                    'attention_mask': mask_chunk.unsqueeze(0)
-                }
-                
+                chunk_text = tokenizer.decode(input_chunk, skip_special_tokens=True)
+                chunk_text = f"Represent this text for semantic similarity: {chunk_text}"
+                chunk_input = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').to(device)
                 model_output = model(**chunk_input)
-                embedding = model_output[0][:, 0].squeeze(0)
-                embedding = torch.nn.functional.normalize(embedding, p=2, dim=0)
                 
-                # Use the actual number of non-padding tokens for weighting
+                # Use average pooling instead of CLS token
+                embedding = average_pool(model_output.last_hidden_state, chunk_input['attention_mask'])
+                embedding = torch.nn.functional.normalize(embedding, p=2, dim=1)[0]
+                
                 valid_tokens = mask_chunk.sum().item()
                 embeddings.append(embedding)
                 token_counts.append(valid_tokens)
             
-            # Weight and combine embeddings
             total_tokens = sum(token_counts)
             weighted_embeddings = [emb * (count / total_tokens) for emb, count in zip(embeddings, token_counts)]
             final_embedding = torch.stack(weighted_embeddings).sum(dim=0)
             return F.normalize(final_embedding, p=2, dim=0).cpu()
         else:
             total_count+=1
-            #print("within token limit")
             model_output = model(**tokens)
-            sentence_embeddings = model_output[0][:, 0].squeeze(0)
-            sentence_embeddings = torch.nn.functional.normalize(sentence_embeddings, p=2, dim=0)
-            return sentence_embeddings.cpu()
+            # Use average pooling instead of CLS token
+            embeddings = average_pool(model_output.last_hidden_state, tokens['attention_mask'])
+            return F.normalize(embeddings, p=2, dim=1)[0].cpu()
 
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions

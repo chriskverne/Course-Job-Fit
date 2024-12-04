@@ -4,6 +4,41 @@ from transformers import AutoTokenizer, AutoModel
 import torch.nn.functional as F
 import time
 
+"""
+# Model parameters
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = AutoModel.from_pretrained("thenlper/gte-large").to(device)
+tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-large")
+max_token_len = model.config.max_position_embeddings #tokenizer.model_max_length
+
+# How many descriptions are above token limit
+truncation_count = 0
+total_count = 0
+
+def get_mean_pooled_embedding(tokens):
+    # Simple chunking like SBERT
+    chunks = [tokens[i:i + max_token_len] for i in range(0, len(tokens), max_token_len)]
+    embeddings = []
+    token_counts = []
+    
+    for chunk in chunks:
+        chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
+        encoded = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').to(device)
+        model_output = model(**encoded)
+        chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
+        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
+        
+        embeddings.append(chunk_embedding)
+        token_counts.append(len(chunk))
+
+    total_tokens = sum(token_counts)
+    weighted_embeddings = [emb * (count / total_tokens) for emb, count in zip(embeddings, token_counts)]
+    final_embedding = torch.stack(weighted_embeddings).sum(dim=0)
+    final_embedding = F.normalize(final_embedding.unsqueeze(0), p=2, dim=1)[0]
+    
+    return final_embedding
+"""
+
 # Model parameters
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = AutoModel.from_pretrained("thenlper/gte-large").to(device)
@@ -66,31 +101,6 @@ def encode_text(text):
             outputs = model(**tokens)
             embedding = average_pool(outputs.last_hidden_state, tokens['attention_mask'])
             return F.normalize(embedding, p=2, dim=1)[0].cpu()
-
-"""
-def get_mean_pooled_embedding(tokens):
-    # Simple chunking like SBERT
-    chunks = [tokens[i:i + max_token_len] for i in range(0, len(tokens), max_token_len)]
-    embeddings = []
-    token_counts = []
-    
-    for chunk in chunks:
-        chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
-        encoded = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').to(device)
-        model_output = model(**encoded)
-        chunk_embedding = mean_pooling(model_output, encoded['attention_mask'])
-        chunk_embedding = F.normalize(chunk_embedding, p=2, dim=1)[0]
-        
-        embeddings.append(chunk_embedding)
-        token_counts.append(len(chunk))
-
-    total_tokens = sum(token_counts)
-    weighted_embeddings = [emb * (count / total_tokens) for emb, count in zip(embeddings, token_counts)]
-    final_embedding = torch.stack(weighted_embeddings).sum(dim=0)
-    final_embedding = F.normalize(final_embedding.unsqueeze(0), p=2, dim=1)[0]
-    
-    return final_embedding
-"""
     
 def calculate_similarity(course_path, output_path, job_path):
     # Load cleaned course and job descriptions

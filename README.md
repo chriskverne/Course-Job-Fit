@@ -1,7 +1,7 @@
 # course-job-fit
 
 To Access Complete List of Cours syllabi, please visit https://www4.cis.fiu.edu/courses/Syllabi/
-Data set of Jobs can be found at kaggle.com/xxxxx
+Data set of Jobs can be found at kaggle.com/100K+ American Tech Job Postings (2024 Oct-Dec)
 
 This code includes the xxx things
 

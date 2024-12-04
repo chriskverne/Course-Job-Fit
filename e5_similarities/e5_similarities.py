@@ -4,7 +4,6 @@ from transformers import AutoTokenizer, AutoModel
 import torch.nn.functional as F
 import time
 
-
 """
 # Model parameters
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -82,10 +81,12 @@ def encode_text(text, is_course):
     with torch.no_grad():
         global truncation_count, total_count
         text = f"passage: {text}" if is_course else f"query: {text}"
-        tokens = tokenizer(text, truncation=False, padding=True, return_tensors="pt")
+
+        tokens = tokenizer(text, truncation=False, padding=True, return_tensors="pt").to(device)
         tokens = {k: v.to(device) for k, v in tokens.items()} # Move to device
         input_ids = tokens['input_ids'][0]
         attention_mask = tokens['attention_mask'][0]
+
         #print('tt_token_len:', len(input_ids))
         if len(input_ids) > max_token_len:
             truncation_count+=1
@@ -99,21 +100,18 @@ def encode_text(text, is_course):
                 
             embeddings = []
             token_counts = []
-                
+            
             for input_chunk, mask_chunk in zip(input_chunks, mask_chunks):
-                #print("chunk len", len(input_chunk))
-                chunk_input = {
-                    'input_ids': input_chunk.unsqueeze(0),
-                    'attention_mask': mask_chunk.unsqueeze(0)
-                }
-                    
+                chunk_text = tokenizer.decode(input_chunk, skip_special_tokens=True)
+                chunk_text = f"passage: {chunk_text}" if is_course else f"query: {chunk_text}"
+                chunk_input = tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt')
+                chunk_input = {k: v.to(device) for k, v in tokenizer(chunk_text, padding=True, truncation=True, return_tensors='pt').items()} # Move to device
                 outputs = model(**chunk_input)
                 embedding = average_pool(outputs.last_hidden_state, chunk_input['attention_mask'])
                 embedding = F.normalize(embedding, p=2, dim=1)[0]
                     
                 # Use the actual number of non-padding tokens for weighting
                 valid_tokens = mask_chunk.sum().item()
-                #print('token_len', len(input_chunk),'num valid_tokens', valid_tokens)
                 embeddings.append(embedding)
                 token_counts.append(valid_tokens)
                 
