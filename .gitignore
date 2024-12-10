@@ -48,6 +48,7 @@ compare_models/*
 
 compareModels/*
 !compareModels/compareModelTemp.py
+!compareModels/plots.py
 
 # PyCache
 **/__pycache__/*
