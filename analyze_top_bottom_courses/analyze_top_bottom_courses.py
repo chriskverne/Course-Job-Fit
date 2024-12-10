@@ -72,11 +72,12 @@ def extract_key_words(top_courses, bottom_courses):
                 stop_words='english',  # Remove common English stop words
                 use_mmr=True,  # Use Maximal Marginal Relevance
                 diversity=0.7,  # Diversity parameter
-                top_n=5  # Number of keywords to extract per course
+                top_n=5,  # Number of keywords to extract per course
             )
-            # Extend the all_keywords list with keywords from this course
             all_keywords.extend(keywords)
-        
+
+        # Filter out less relevant key_words
+        all_keywords = [(keyword, score) for keyword, score in all_keywords if score >= 0.3]
         return all_keywords
     
     # Process both top and bottom courses
@@ -87,8 +88,8 @@ def extract_key_words(top_courses, bottom_courses):
     print("\nTop Courses Keywords:")
     print(top_keywords)
 
-    print("\nBottom Courses Keywords:")
-    print(bottom_keywords)
+    #print("\nBottom Courses Keywords:")
+    #print(bottom_keywords)
     
     return {
         'top_keywords': top_keywords,
@@ -130,16 +131,16 @@ def analyze_courses(num_courses):
             print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
             print(f"Number of courses: {topic_data['doc_count']}")
         
-        print(f"\nTopic Analysis for {program} Bottom Courses:")
-        bottom_topics = topic_modeling(bottom_details)
-        for topic_id, topic_data in bottom_topics.items():
-            print(f"\nTopic {topic_id}:")
-            print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
-            print(f"Number of courses: {topic_data['doc_count']}")
+        #print(f"\nTopic Analysis for {program} Bottom Courses:")
+        #bottom_topics = topic_modeling(bottom_details)
+        #for topic_id, topic_data in bottom_topics.items():
+            #print(f"\nTopic {topic_id}:")
+            #print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
+            #print(f"Number of courses: {topic_data['doc_count']}")
 
         extract_key_words(top_details, bottom_details)
 
-analyze_courses(32)
+analyze_courses(10)
 
 """
 import pandas as pd
