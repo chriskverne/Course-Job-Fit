@@ -106,8 +106,16 @@ def analyze_courses(num_courses):
         'PM': '../compare_models/PM/course_rankings.xlsx',
         'SWE': '../compare_models/SWE/course_rankings.xlsx'
     }
+
+    high_paying_programs = {
+        'CS': '../compare_models/CS/highest_paying_courses.xlsx',
+        'DS': '../compare_models/DS/highest_paying_courses.xlsx',
+        'IT': '../compare_models/IT/highest_paying_courses.xlsx',
+        'PM': '../compare_models/PM/highest_paying_courses.xlsx',
+        'SWE': '../compare_models/SWE/highest_paying_courses.xlsx'
+    }
     
-    for program, file_path in programs.items():
+    for program, file_path in high_paying_programs.items(): # programs.items():
         print(f"------------ Analyzing {program} topics/keywords ------------")
         program_df = pd.read_excel(file_path)['Course Name']
         
