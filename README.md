@@ -12,3 +12,8 @@ This code includes the xxx things
 5) Comparing the model result logic can be found in the comparedModelSimilarities.py file in the main directory.
 
 Overall the code and structure of the project should be quite easy to follow. Moreover we encourage you to use the dataset we collected for your own research projects and compare the results with what we found!
+
+Cite our paper:
+Christopher L. Kverne, Federico Monteverdi, Agoritsa Polyzou, Christine Lisetti, Janki Bhimani
+“Course-Job Fit: Understanding the Contextual Relationship Between CS Courses and Employment
+Opportunities”
