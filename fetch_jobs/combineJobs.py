@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Functions.CleanText import clean_text
 
+"""
 swe_paths = [
     './jobs/swe_jobs_10_05.xlsx',
     './jobs/swe_jobs_10_08.xlsx',
@@ -26,7 +27,18 @@ swe_paths = [
     './jobs/swe_jobs_11_29.xlsx',
     './jobs/swe_jobs_12_1.xlsx',
     './jobs/swe_jobs_12_2.xlsx',
+    './jobs/swe_jobs_12_3.xlsx',
+    './jobs/swe_jobs_12_4.xlsx',
+    './jobs/swe_jobs_12_6.xlsx',
+    './jobs/swe_jobs_12_8.xlsx',
+    './jobs/swe_jobs_12_9.xlsx',
+    './jobs/swe_jobs_12_11.xlsx',
+    './jobs/swe_jobs_12_12.xlsx',
+    './jobs/swe_jobs_12_13.xlsx',
+    './jobs/swe_jobs_12_17.xlsx',
+    './jobs/swe_jobs_12_19.xlsx',
 ]
+
 cs_paths = [
     './jobs/cs_jobs_10_10.xlsx',
     './jobs/cs_jobs_10_13.xlsx',
@@ -46,6 +58,14 @@ cs_paths = [
     './jobs/cs_jobs_11_29.xlsx',
     './jobs/cs_jobs_12_1.xlsx',
     './jobs/cs_jobs_12_2.xlsx',
+    './jobs/cs_jobs_12_3.xlsx',
+    './jobs/cs_jobs_12_6.xlsx',
+    './jobs/cs_jobs_12_8.xlsx',
+    './jobs/cs_jobs_12_9.xlsx',
+    './jobs/cs_jobs_12_12.xlsx',
+    './jobs/cs_jobs_12_13.xlsx',
+    './jobs/cs_jobs_12_17.xlsx',
+    './jobs/cs_jobs_12_19.xlsx',
 ]
 ds_paths = [
     './jobs/ds_jobs_10_10.xlsx',
@@ -66,6 +86,16 @@ ds_paths = [
     './jobs/ds_jobs_11_29.xlsx',
     './jobs/ds_jobs_12_1.xlsx',
     './jobs/ds_jobs_12_2.xlsx',
+    './jobs/ds_jobs_12_3.xlsx',
+    './jobs/ds_jobs_12_4.xlsx',
+    './jobs/ds_jobs_12_6.xlsx',
+    './jobs/ds_jobs_12_8.xlsx',
+    './jobs/ds_jobs_12_9.xlsx',
+    './jobs/ds_jobs_12_11.xlsx',
+    './jobs/ds_jobs_12_12.xlsx',
+    './jobs/ds_jobs_12_13.xlsx',
+    './jobs/ds_jobs_12_17.xlsx',
+    './jobs/ds_jobs_12_19.xlsx',
 ]
 it_paths = [
     './jobs/it_jobs_10_13.xlsx',
@@ -85,6 +115,14 @@ it_paths = [
     './jobs/it_jobs_11_29.xlsx',
     './jobs/it_jobs_12_1.xlsx',
     './jobs/it_jobs_12_2.xlsx',
+    './jobs/it_jobs_12_3.xlsx',
+    './jobs/it_jobs_12_4.xlsx',
+    './jobs/it_jobs_12_6.xlsx',
+    './jobs/it_jobs_12_8.xlsx',
+    './jobs/it_jobs_12_9.xlsx',
+    './jobs/it_jobs_12_12.xlsx',
+    './jobs/it_jobs_12_17.xlsx',
+    './jobs/it_jobs_12_19.xlsx',
 ]
 pm_paths = [
     './jobs/pm_jobs_10_10.xlsx',
@@ -104,9 +142,19 @@ pm_paths = [
     './jobs/pm_jobs_11_29.xlsx',
     './jobs/pm_jobs_12_1.xlsx',
     './jobs/pm_jobs_12_2.xlsx',
+    './jobs/pm_jobs_12_3.xlsx',
+    './jobs/pm_jobs_12_6.xlsx',
+    './jobs/pm_jobs_12_8.xlsx',
+    './jobs/pm_jobs_12_9.xlsx',
+    './jobs/pm_jobs_12_11.xlsx',
+    './jobs/pm_jobs_12_12.xlsx',
+    './jobs/pm_jobs_12_13.xlsx',
+    './jobs/pm_jobs_12_17.xlsx',
+    './jobs/pm_jobs_12_19.xlsx',
 ]
+"""
 
-def combine_dataframes(paths):
+def combine_dataframes(paths, field):
     tt_jobs = 0
     valid_jobs = 0
     all_dfs = []
@@ -129,7 +177,7 @@ def combine_dataframes(paths):
     combined_df.drop_duplicates(subset=['description'], inplace=True)
 
     # Results
-    print(f'TT_JOBS: {tt_jobs} NON_EMPTY_JOBS: {valid_jobs} UNIQUE_VALID_JOBS: {combined_df.shape[0]}')
+    print(f'FIELD: {field} TT_JOBS: {tt_jobs} NON_EMPTY_JOBS: {valid_jobs} UNIQUE_VALID_JOBS: {combined_df.shape[0]}')
 
     return combined_df
 
@@ -157,29 +205,36 @@ def clean_data(df):
 
     return df
 
-combined_swe_df = combine_dataframes(swe_paths)
-combined_cs_df = combine_dataframes(cs_paths)
-combined_ds_df = combine_dataframes(ds_paths)
-combined_it_df = combine_dataframes(it_paths)
-combined_pm_df = combine_dataframes(pm_paths)
+cs_paths = [os.path.join('./jobs/cs_jobs', f) for f in os.listdir('./jobs/cs_jobs')]
+ds_paths = [os.path.join('./jobs/ds_jobs', f) for f in os.listdir('./jobs/ds_jobs')]
+it_paths = [os.path.join('./jobs/it_jobs', f) for f in os.listdir('./jobs/it_jobs')]
+pm_paths = [os.path.join('./jobs/pm_jobs', f) for f in os.listdir('./jobs/pm_jobs')]
+swe_paths = [os.path.join('./jobs/swe_jobs', f) for f in os.listdir('./jobs/swe_jobs')]
 
-cleaned_swe_jobs = clean_data(combined_swe_df)
-cleaned_cs_jobs = clean_data(combined_cs_df)
-cleaned_ds_jobs = clean_data(combined_ds_df)
-cleaned_it_jobs = clean_data(combined_it_df)
-cleaned_pm_jobs = clean_data(combined_pm_df)
+combined_swe_df = combine_dataframes(swe_paths, 'SWE')
+combined_cs_df = combine_dataframes(cs_paths, 'CS')
+combined_ds_df = combine_dataframes(ds_paths, 'DS')
+combined_it_df = combine_dataframes(it_paths, 'IT')
+combined_pm_df = combine_dataframes(pm_paths, 'PM')
 
-print(f"Num Swe Jobs : {len(cleaned_swe_jobs)}")
-print(f"Num CS Jobs : {len(cleaned_cs_jobs)}")
-print(f"Num DS Jobs : {len(cleaned_ds_jobs)}")
-print(f"Num IT Jobs : {len(cleaned_it_jobs)}")
-print(f"Num PM Jobs : {len(cleaned_pm_jobs)}")
+#cleaned_swe_jobs = clean_data(combined_swe_df)
+#cleaned_cs_jobs = clean_data(combined_cs_df)
+#cleaned_ds_jobs = clean_data(combined_ds_df)
+#cleaned_it_jobs = clean_data(combined_it_df)
+#cleaned_pm_jobs = clean_data(combined_pm_df)
 
-cleaned_swe_jobs.to_excel('../Datasets/swe_jobs.xlsx')
-cleaned_cs_jobs.to_excel('../Datasets/cs_jobs.xlsx')
-cleaned_ds_jobs.to_excel('../Datasets/ds_jobs.xlsx')
-cleaned_it_jobs.to_excel('../Datasets/it_jobs.xlsx')
-cleaned_pm_jobs.to_excel('../Datasets/pm_jobs.xlsx')
+#print(f"Num Swe Jobs : {len(cleaned_swe_jobs)}")
+#print(f"Num CS Jobs : {len(cleaned_cs_jobs)}")
+#print(f"Num DS Jobs : {len(cleaned_ds_jobs)}")
+#print(f"Num IT Jobs : {len(cleaned_it_jobs)}")
+#print(f"Num PM Jobs : {len(cleaned_pm_jobs)}")
+
+#cleaned_swe_jobs.to_excel('../Datasets/swe_jobs.xlsx')
+#cleaned_cs_jobs.to_excel('../Datasets/cs_jobs.xlsx')
+#cleaned_ds_jobs.to_excel('../Datasets/ds_jobs.xlsx')
+#cleaned_it_jobs.to_excel('../Datasets/it_jobs.xlsx')
+#cleaned_pm_jobs.to_excel('../Datasets/pm_jobs.xlsx')
+
 
 """
 # Converts to 1 large dataset of specified distribution

@@ -1,4 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
 core_courses = ['CDA_3102', 'CEN_4010', 'CGS_1920', 'CGS_3095', 'CIS_3950', 'CIS_4951', 'CNT_4713', 'COP_2210', 'COP_3337', 'COP_3530', 'COP_4338', 'COP_4555', 'COP_4610', 'COT_3100', 'ENC_3249', 'MAD_2104']
 elective_courses = ['CAP_4052', 'CAP_4104', 'CAP_4453', 'CAP_4506', 'CAP_4612', 'CAP_4630', 'CAP_4641', 'CAP_4710', 'CAP_4770', 'CAP_4830', 'CDA_4625', 'CEN_4021', 'CEN_4072', 'CEN_4083', 'CIS_4203', 'CIS_4731', 'COP_4226', 'COP_4520', 'COP_4534', 'COP_4604', 'COP_4655', 'COP_4710', 'COP_4751', 'COT_3510', 'COT_3541', 'COT_4431', 'COT_4521', 'COT_4601', 'CTS_4408', 'MAD_3301', 'MAD_3401', 'MAD_3512', 'MAD_4203', 'MHF_4302']
 
@@ -36,6 +39,11 @@ def analyze_program_courses(programs, core_courses, elective_courses):
     
     return core_comparison, elective_comparison
 
+def matching_top(programs, core_courses, elective_courses):
+    for program, file_path in programs.items():
+        df = pd.read_excel(file_path)
+        top_courses = df.head(30)
+
 def generate_statistics(df):
     stats = {
         'mean': df.mean(),
@@ -48,6 +56,7 @@ def generate_statistics(df):
 
 core_df, elective_df = analyze_program_courses(programs, core_courses, elective_courses)
 
+"""
 print("--------- core ----------")
 print(f'Num core-courses: {len(core_courses)}')
 print(core_df['CS'].mean())
@@ -63,3 +72,47 @@ print(elective_df['DS'].mean())
 print(elective_df['SWE'].mean())
 print(elective_df['PM'].mean())
 print(elective_df['IT'].mean())
+"""
+
+fields = ['CS', 'DS', 'SWE', 'PM', 'IT']
+core_means = [
+    core_df['CS'].mean(),
+    core_df['DS'].mean(),
+    core_df['SWE'].mean(),
+    core_df['PM'].mean(),
+    core_df['IT'].mean()
+]
+elective_means = [
+    elective_df['CS'].mean(),
+    elective_df['DS'].mean(),
+    elective_df['SWE'].mean(),
+    elective_df['PM'].mean(),
+    elective_df['IT'].mean()
+]
+
+# Create figure and axis
+fig, ax = plt.subplots(figsize=(5, 4))
+
+# Set width of bars and positions
+width = 0.3
+x = np.arange(len(fields))
+
+# Create bars - now starting from 210 and going up to the ranking
+ax.bar(x - width/2, 210 - np.array(core_means), width, bottom=np.array(core_means), 
+       label='Core Courses', color='white', edgecolor='black', hatch='//')
+ax.bar(x + width/2, 210 - np.array(elective_means), width, bottom=np.array(elective_means), 
+       label='Elective Courses', color='gray', edgecolor='black')
+
+# Customize the plot
+#ax.set_ylabel('Ranking', fontsize=12)
+#ax.set_xlabel('Field', fontsize=12)
+ax.set_title('Average Course Rankings by Field')
+ax.set_xticks(x)
+ax.set_xticklabels(fields)
+ax.legend()
+
+# Set y-axis limits
+ax.set_ylim(210, 1)
+
+plt.tight_layout()
+plt.show()
