@@ -39,21 +39,6 @@ def analyze_program_courses(programs, core_courses, elective_courses):
     
     return core_comparison, elective_comparison
 
-def matching_top(programs, core_courses, elective_courses):
-    for program, file_path in programs.items():
-        df = pd.read_excel(file_path)
-        top_courses = df.head(30)
-
-def generate_statistics(df):
-    stats = {
-        'mean': df.mean(),
-        'median': df.median(),
-        'std': df.std(),
-        'min': df.min(),
-        'max': df.max()
-    }
-    return pd.DataFrame(stats)
-
 core_df, elective_df = analyze_program_courses(programs, core_courses, elective_courses)
 
 """
@@ -90,6 +75,19 @@ elective_means = [
     elective_df['IT'].mean()
 ]
 
+core = ((core_df['CS'] + core_df['DS'] + core_df['SWE'] + core_df['PM'] + core_df['IT'])/5).sort_values()
+
+
+elective = [
+    elective_df['CS'],
+    elective_df['DS'],
+    elective_df['SWE'],
+    elective_df['PM'],
+    elective_df['IT']
+]
+
+print(core)
+
 # Create figure and axis
 fig, ax = plt.subplots(figsize=(5, 4))
 
@@ -115,4 +113,4 @@ ax.legend()
 ax.set_ylim(210, 1)
 
 plt.tight_layout()
-plt.show()
+#plt.show()
