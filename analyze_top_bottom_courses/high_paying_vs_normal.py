@@ -113,7 +113,7 @@ def print_analysis_report(analysis_results: Dict, n: int = 20):
         print(f"  Salary Rank: {course['salary_rank']:.1f}")
         print(f"  Rank Decline: {course['rank_decline']:.1f}")
 
-def analyze_program_rankings(program_key: str):
+def analyze_program_rankings(program_key):
     """
     Analyzes rankings for a specific program
     """
@@ -141,6 +141,32 @@ def analyze_program_rankings(program_key: str):
     
     return comparison_df, analysis_results
 
+def analyze_course_levels(program_key):
+    general_df = pd.read_excel(programs[program_key])
+    salary_df = pd.read_excel(high_paying_programs[program_key])
+    
+    def categorize_course_level(course_name):
+        try:
+            course_num = int(course_name.split('_')[1][:1])
+            return 'graduate' if course_num >= 5 else 'undergraduate'
+        except:
+            #print(course_name)
+            return 'undergraduate' # every course which was unknown was undergraduate in this example
+    
+    general_df['course_level'] = general_df['Course Name'].apply(categorize_course_level)
+    salary_df['course_level'] = salary_df['Course Name'].apply(categorize_course_level)
+    
+    general_avg = general_df.groupby('course_level')['Average_Course_Rank'].mean().round(2)
+    salary_avg = salary_df.groupby('course_level')['Average Rank'].mean().round(2)
+    
+    print(f'\n--------------------- Program {program_key} -------------------------')
+    print("General Rankings Average:")
+    print(general_avg)
+    print("\nSalary Rankings Average:")
+    print(salary_avg)
+
+    return general_avg, salary_avg
+
 # Define data paths
 programs = {
     'CS': '../compare_models/CS/course_rankings.xlsx',
@@ -158,115 +184,16 @@ high_paying_programs = {
     'SWE': '../compare_models/SWE/highest_paying_courses.xlsx'
 }
 
+#
+analyze_course_levels('CS')
+analyze_course_levels('DS')
+analyze_course_levels('IT')
+analyze_course_levels('PM')
+analyze_course_levels('SWE')
+
 # Execute analysis
-cs_comparison_df, cs_analysis_results = analyze_program_rankings('CS')
+# cs_comparison_df, cs_analysis_results = analyze_program_rankings('CS')
 # ds_comparison_df, ds_analysis_results = analyze_program_rankings('DS')
 # it_comparison_df, it_analysis_results = analyze_program_rankings('IT')
 # pm_comparison_df, pm_analysis_results = analyze_program_rankings('PM')
 # swe_comparison_df, swe_analysis_results = analyze_program_rankings('SWE')
-
-"""
-import pandas as pd
-import numpy as np
-from typing import Tuple
-
-def analyze_ranking_changes(general_df: pd.DataFrame, salary_df: pd.DataFrame) -> Tuple[pd.DataFrame, dict]:
-    Analyzes changes in course rankings between general job alignment and high-paying job alignment.
-    
-    Args:
-        general_df: DataFrame with general job alignment rankings
-        salary_df: DataFrame with high-paying job alignment rankings
-    
-    Returns:
-        Tuple containing:
-        - DataFrame with ranking comparisons
-        - Dictionary with summary statistics
-    # Merge the dataframes on Course Name
-    comparison_df = pd.merge(
-        general_df[['Course Name', 'Average_Course_Rank']],
-        salary_df[['Course Name', 'Average Rank']],
-        on='Course Name',
-        how='inner'
-    )
-    
-    # Rename columns for clarity
-    comparison_df.columns = ['Course Name', 'General_Rank', 'Salary_Rank']
-    
-    # Calculate rank changes
-    comparison_df['Rank_Change'] = comparison_df['General_Rank'] - comparison_df['Salary_Rank']
-    comparison_df['Absolute_Change'] = abs(comparison_df['Rank_Change'])
-    
-    # Sort by absolute change to identify biggest movers
-    comparison_df = comparison_df.sort_values('Absolute_Change', ascending=False)
-    
-    # Calculate summary statistics
-    stats = {
-        'total_courses': len(comparison_df),
-        'improved_for_salary': len(comparison_df[comparison_df['Rank_Change'] > 0]),
-        'worsened_for_salary': len(comparison_df[comparison_df['Rank_Change'] < 0]),
-        'unchanged': len(comparison_df[comparison_df['Rank_Change'] == 0]),
-        'avg_absolute_change': comparison_df['Absolute_Change'].mean(),
-        'median_absolute_change': comparison_df['Absolute_Change'].median(),
-        'max_improvement': comparison_df['Rank_Change'].max(),
-        'max_decline': comparison_df['Rank_Change'].min(),
-        'top_improvers': comparison_df[comparison_df['Rank_Change'] > 0].head(5)[['Course Name', 'Rank_Change']].to_dict('records'),
-        'top_decliners': comparison_df[comparison_df['Rank_Change'] < 0].head(5)[['Course Name', 'Rank_Change']].to_dict('records')
-    }
-    
-    return comparison_df, stats
-
-def analyze_top_course_differences(comparison_df, top_n=30):
-    # Get top courses from both rankings
-    top_salary = comparison_df.nsmallest(top_n, 'Salary_Rank')
-    top_general = comparison_df.nsmallest(top_n, 'General_Rank')
-    
-    # Find overlapping courses
-    top_salary_courses = set(top_salary['Course Name'])
-    top_general_courses = set(top_general['Course Name'])
-    common_courses = top_salary_courses.intersection(top_general_courses)
-    
-    print(f"\nAnalysis of Top {top_n} Courses:")
-    print(f"Courses in both top lists: {len(common_courses)}")
-    print(f"Unique to salary top list: {len(top_salary_courses - common_courses)}")
-    print(f"Unique to general top list: {len(top_general_courses - common_courses)}")
-    
-    print("\nCourses appearing in both top lists:")
-    for course in common_courses:
-        course_data = comparison_df[comparison_df['Course Name'] == course].iloc[0]
-        print(f"\n{course}:")
-        print(f"  Salary Rank: {course_data['Salary_Rank']:.1f}")
-        print(f"  General Rank: {course_data['General_Rank']:.1f}")
-        print(f"  Rank Change: {course_data['Rank_Change']:.1f}")
-    
-    print("\nCourses unique to high-paying jobs top list:")
-    salary_only = top_salary_courses - common_courses
-    for course in salary_only:
-        course_data = comparison_df[comparison_df['Course Name'] == course].iloc[0]
-        print(f"\n{course}:")
-        print(f"  Salary Rank: {course_data['Salary_Rank']:.1f}")
-        print(f"  General Rank: {course_data['General_Rank']:.1f}")
-        print(f"  Improvement: {course_data['Rank_Change']:.1f}")
-
-# Run the analysis
-# Analyze the CS program data
-programs = {
-    'CS': '../compare_models/CS/course_rankings.xlsx',
-    'DS': '../compare_models/DS/course_rankings.xlsx',
-    'IT': '../compare_models/IT/course_rankings.xlsx',
-    'PM': '../compare_models/PM/course_rankings.xlsx',
-    'SWE': '../compare_models/SWE/course_rankings.xlsx'
-}
-high_paying_programs = {
-    'CS': '../compare_models/CS/highest_paying_courses.xlsx',
-    'DS': '../compare_models/DS/highest_paying_courses.xlsx',
-    'IT': '../compare_models/IT/highest_paying_courses.xlsx',
-    'PM': '../compare_models/PM/highest_paying_courses.xlsx',
-    'SWE': '../compare_models/SWE/highest_paying_courses.xlsx'
-}
-
-cs_df = pd.read_excel(programs['CS'])
-cs_salary_df = pd.read_excel(high_paying_programs['CS'])
-comparison_df, stats = analyze_ranking_changes(cs_df, cs_salary_df)
-
-analyze_top_course_differences(comparison_df)
-"""
