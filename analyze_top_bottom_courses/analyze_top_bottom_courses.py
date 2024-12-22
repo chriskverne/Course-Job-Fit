@@ -58,7 +58,7 @@ def topic_modeling(courses_df, min_topic_size=2):
 
 # Returns topic keywords, and keywords more related to the teaching aspect, and noisy keywords
 kw_model = KeyBERT() # Only initialize once
-def extract_key_words(top_courses, bottom_courses):
+def extract_key_words(top_courses, bottom_courses=""):
     def process_descriptions(courses_df):
         # Single list to store all keywords from all courses
         all_keywords = []
@@ -72,7 +72,7 @@ def extract_key_words(top_courses, bottom_courses):
                 stop_words='english',  # Remove common English stop words
                 use_mmr=True,  # Use Maximal Marginal Relevance
                 diversity=0.7,  # Diversity parameter
-                top_n=5,  # Number of keywords to extract per course
+                top_n=20,  # Number of keywords to extract per course
             )
             all_keywords.extend(keywords)
 
@@ -82,8 +82,9 @@ def extract_key_words(top_courses, bottom_courses):
     
     # Process both top and bottom courses
     top_keywords = process_descriptions(top_courses)
-    bottom_keywords = process_descriptions(bottom_courses)
-    
+    if bottom_courses != "" :
+        bottom_keywords = process_descriptions(bottom_courses)
+    bottom_keywords=""
     # Print results in a formatted way
     print("\nTop Courses Keywords:")
     print(top_keywords)
@@ -115,7 +116,7 @@ def analyze_courses(num_courses):
         'SWE': '../compare_models/SWE/highest_paying_courses.xlsx'
     }
     
-    for program, file_path in high_paying_programs.items(): # programs.items():
+    for program, file_path in programs.items(): # programs.items():
         print(f"------------ Analyzing {program} topics/keywords ------------")
         program_df = pd.read_excel(file_path)['Course Name']
         
@@ -126,18 +127,18 @@ def analyze_courses(num_courses):
         #print(top_details[['Course Name', 'Course Description']])
         
         # Get bottom courses
-        bottom_courses = program_df[-num_courses:]
-        bottom_details = get_courses(courses_df, bottom_courses)
+        #bottom_courses = program_df[-num_courses:]
+        #bottom_details = get_courses(courses_df, bottom_courses)
         #print(f"\nBottom {num_courses} {program} courses:")
         #print(bottom_details[['Course Name', 'Course Description']])
 
         # Perform topic modeling on all courses
-        print(f"\nTopic Analysis for {program} Top Courses:")
-        top_topics = topic_modeling(top_details)
-        for topic_id, topic_data in top_topics.items():
-            print(f"\nTopic {topic_id}:")
-            print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
-            print(f"Number of courses: {topic_data['doc_count']}")
+        #print(f"\nTopic Analysis for {program} Top Courses:")
+        #top_topics = topic_modeling(top_details)
+        #for topic_id, topic_data in top_topics.items():
+        #    print(f"\nTopic {topic_id}:")
+        #    print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
+        #    print(f"Number of courses: {topic_data['doc_count']}")
         
         #print(f"\nTopic Analysis for {program} Bottom Courses:")
         #bottom_topics = topic_modeling(bottom_details)
@@ -146,9 +147,10 @@ def analyze_courses(num_courses):
             #print(f"Keywords: {', '.join(topic_data['keywords'][:5])}")
             #print(f"Number of courses: {topic_data['doc_count']}")
 
-        extract_key_words(top_details, bottom_details)
 
-analyze_courses(10)
+        extract_key_words(top_details, "")
+
+analyze_courses(21)
 
 """
 import pandas as pd
