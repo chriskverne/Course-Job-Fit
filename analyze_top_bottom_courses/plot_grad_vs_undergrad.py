@@ -64,7 +64,7 @@ plt.figure(figsize=(8, 6))
 
 # Set bar width and positions with custom spacing
 bar_width = 0.11
-spacing_factor = 0.7  # Controls gap between field groups
+spacing_factor = 0.5  # Controls gap between field groups
 r1 = np.arange(len(fields)) * spacing_factor
 r2 = [x + bar_width for x in r1]
 r3 = [x + bar_width for x in r2]
@@ -102,18 +102,19 @@ plt.gca().spines['top'].set_linewidth(0.5)
 plt.gca().spines['bottom'].set_linewidth(0.5)
 
 # Customize the plot
-plt.title('Graduate / Undergraduate Changes', pad=10)
+plt.title('Graduate / Undergraduate Changes', pad=5, fontsize=16)
 
 # Update x-ticks to align with the center of each group of bars
 group_centers = r1 + (1.5 * bar_width)  # Calculate center of each group
-plt.xticks(group_centers, fields)
+plt.xticks(group_centers, fields, fontsize=14)
+plt.yticks(fontsize=14)
 
 # Adjust the plot limits to show all bars with some padding
 plt.xlim(min(r1) - bar_width, max(r4) + bar_width)
 plt.ylim(210, 25)
 
 # Add legend with slightly adjusted position
-plt.legend(loc='upper right', frameon=True, edgecolor='black', fancybox=False)
+plt.legend(loc='upper right', frameon=True, edgecolor='black', fancybox=False, fontsize=15.5)
 
 # Adjust layout to prevent label cutoff
 plt.tight_layout()
