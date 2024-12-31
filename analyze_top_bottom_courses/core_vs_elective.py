@@ -97,14 +97,14 @@ x = np.arange(len(fields))
 
 # Create bars - now starting from 210 and going up to the ranking
 ax.bar(x - width/2, 210 - np.array(core_means), width, bottom=np.array(core_means), 
-       label='Core Courses', color='white', edgecolor='black', hatch='//')
+       label='Core Courses', color='#E69F00', edgecolor='black', hatch='//')
 ax.bar(x + width/2, 210 - np.array(elective_means), width, bottom=np.array(elective_means), 
-       label='Elective Courses', color='gray', edgecolor='black')
+       label='Elective Courses', color='#56B4E9', edgecolor='black')
 
 # Customize the plot
-#ax.set_ylabel('Ranking', fontsize=12)
-#ax.set_xlabel('Field', fontsize=12)
-ax.set_title('Average Course Rankings by Field')
+ax.set_ylabel('Course Rank', fontsize=12)
+ax.set_xlabel('Field', fontsize=12)
+#ax.set_title('Average Course Rankings by Field')
 ax.set_xticks(x)
 ax.set_xticklabels(fields)
 ax.legend()
@@ -113,4 +113,4 @@ ax.legend()
 ax.set_ylim(210, 1)
 
 plt.tight_layout()
-#plt.show()
+plt.show()

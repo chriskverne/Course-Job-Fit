@@ -85,13 +85,13 @@ for i, (field, data) in enumerate(zip(fields, data_dicts)):
     undergrad_salary = start_point - data['salary']['undergrad']
     
     plt.bar(r1[i], grad_general, bottom=start_point - grad_general, width=bar_width, 
-            label='Grad General' if i == 0 else "", color=colors[0], edgecolor='black', linewidth=0.5)
+            label='Grad General' if i == 0 else "", color=colors[0], edgecolor='black', linewidth=1.1)
     plt.bar(r2[i], undergrad_general, bottom=start_point - undergrad_general, width=bar_width, 
-            label='Undergrad General' if i == 0 else "", color=colors[1], edgecolor='black', linewidth=0.5)
+            label='Undergrad General' if i == 0 else "", color=colors[1], edgecolor='black', linewidth=1.1)
     plt.bar(r3[i], grad_salary, bottom=start_point - grad_salary, width=bar_width, 
-            label='Grad Top Salary' if i == 0 else "", color=colors[2], edgecolor='black', linewidth=0.5)
+            label='Grad Top Salary' if i == 0 else "", color=colors[2], edgecolor='black', linewidth=1.1)
     plt.bar(r4[i], undergrad_salary, bottom=start_point - undergrad_salary, width=bar_width, 
-            label='Undergrad Top Salary' if i == 0 else "", color=colors[3], edgecolor='black', linewidth=0.5)
+            label='Undergrad Top Salary' if i == 0 else "", color=colors[3], edgecolor='black', linewidth=1.1)
 
 # Add border around plot
 plt.gca().spines['top'].set_visible(True)
