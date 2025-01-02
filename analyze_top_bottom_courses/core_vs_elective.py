@@ -59,7 +59,7 @@ print(elective_df['PM'].mean())
 print(elective_df['IT'].mean())
 """
 
-fields = ['CS', 'DS', 'SWE', 'PM', 'IT']
+fields = ['CYS', 'DS', 'SWE', 'TPM', 'IT']
 core_means = [
     core_df['CS'].mean(),
     core_df['DS'].mean(),

@@ -57,7 +57,7 @@ swe = {
     }
 }
 
-fields = ['CS', 'DS', 'SWE', 'PM', 'IT']
+fields = ['CYS', 'DS', 'SWE', 'TPM', 'IT']
 data_dicts = [cs, ds, swe, pm, it]
 
 plt.figure(figsize=(8, 6))
