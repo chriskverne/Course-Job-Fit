@@ -72,7 +72,7 @@ def extract_key_words(top_courses, bottom_courses=""):
                 stop_words='english',  # Remove common English stop words
                 use_mmr=True,  # Use Maximal Marginal Relevance
                 diversity=0.7,  # Diversity parameter
-                top_n=20,  # Number of keywords to extract per course
+                top_n=15,  # Number of keywords to extract per course
             )
             all_keywords.extend(keywords)
 
