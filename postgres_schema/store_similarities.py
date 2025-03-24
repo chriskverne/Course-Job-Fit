@@ -36,6 +36,3 @@ def store_course_job_similarity(csv_path, method=None):
     cur.close()
     conn.close()
     print(f"Stored {len(df)} similarity records to 'course_job' table.")
-
-# Example usage:
-# store_course_job_similarity('./computed_similarities/GTE/GTE_all_course_ds_jobs.csv')

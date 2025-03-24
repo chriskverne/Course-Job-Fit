@@ -2,7 +2,7 @@ from db_config import get_connection
 from dotenv import load_dotenv
 import os
 
-# Load credentials from .env
+
 load_dotenv()
 
 def execute_schema_sql():
