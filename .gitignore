@@ -66,3 +66,6 @@ tests.py
 computed_similarities/*
 
 temp/*
+
+
+.env
